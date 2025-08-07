@@ -1,0 +1,28 @@
+# Build output
+**/bin/
+**/obj/
+**/out/
+artifacts/
+TestResults/
+
+# IDE
+.vs/
+.vscode/
+*.user
+*.suo
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Packages / tools
+*.nupkg
+packages/
+
+# Logs
+*.log
+logs/
+
+# Docker
+docker-data/
+.env

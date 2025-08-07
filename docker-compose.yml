@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: pfm_db
+    restart: always
+    environment:
+      POSTGRES_USER: pfm_user
+      POSTGRES_PASSWORD: pfm_pass
+      POSTGRES_DB: pfm
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - pfm-net
+
+  backend:
+    build:
+      context: .
+    container_name: pfm_api
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=pfm;Username=pfm_user;Password=pfm_pass
+    ports:
+      - "5138:8080"
+    networks:
+      - pfm-net
+
+volumes:
+  db-data:
+
+networks:
+  pfm-net:
+    driver: bridge
