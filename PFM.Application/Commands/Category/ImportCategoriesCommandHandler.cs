@@ -1,6 +1,7 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
 using PFM.Application.Dtos;
 using PFM.Domain.Interfaces;
@@ -13,17 +14,13 @@ namespace PFM.Application.Commands.Category
         private readonly ICategoryRepository _repo;
         private readonly IValidator<CategoryCsvDto> _dtoValidator;
 
-        public ImportCategoriesCommandHandler(
-            ICategoryRepository repo,
-            IValidator<CategoryCsvDto> dtoValidator)
+        public ImportCategoriesCommandHandler(ICategoryRepository repo, IValidator<CategoryCsvDto> dtoValidator)
         {
             _repo = repo;
             _dtoValidator = dtoValidator;
         }
 
-        public async Task<Unit> Handle(
-            ImportCategoriesCommand request,
-            CancellationToken cancellationToken)
+        public async Task<Unit> Handle(ImportCategoriesCommand request, CancellationToken cancellationToken)
         {
             using var reader = new StreamReader(request.CsvStream);
             var config = new CsvConfiguration(CultureInfo.InvariantCulture)
@@ -35,8 +32,27 @@ namespace PFM.Application.Commands.Category
                 TrimOptions = TrimOptions.Trim
             };
 
-            using var csv = new CsvReader(reader, config);
-            var records = csv.GetRecords<CategoryCsvDto>().ToList();
+            List<CategoryCsvDto> records;
+            try
+            {
+                using var csv = new CsvReader(reader, config);
+                records = csv.GetRecords<CategoryCsvDto>().ToList();
+            }
+            catch (HeaderValidationException)
+            {
+                throw new FluentValidation.ValidationException(new[]
+                { new ValidationFailure("file", "CSV is empty or the header row is missing/invalid.") });
+            }
+            catch (ReaderException)
+            {
+                throw new FluentValidation.ValidationException(new[]
+                { new ValidationFailure("file", "CSV content is malformed and cannot be read.") });
+            }
+            catch (CsvHelperException)
+            {
+                throw new FluentValidation.ValidationException(new[]
+                { new ValidationFailure("file", "CSV parsing failed due to invalid format.") });
+            }
 
             // Validate each DTO
             var failures = records

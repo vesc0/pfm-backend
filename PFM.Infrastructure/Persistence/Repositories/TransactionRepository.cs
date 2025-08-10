@@ -27,13 +27,14 @@ namespace PFM.Infrastructure.Persistence.Repositories
             catch (DbUpdateException dbEx)
             {
                 var inner = dbEx.InnerException;
-                // Detect Postgres unique‐constraint violation (23505), recast to domain exception.
-                if (inner?.GetType().Name == "PostgresException"
-                    && inner.GetType().GetProperty("SqlState")?.GetValue(inner) as string == "23505")
-                {
-                    throw new DuplicateTransactionException(
-                        "One or more transaction IDs already exist.");
-                }
+                var isPgDup =
+                    inner?.GetType().Name == "PostgresException" &&
+                    (inner.GetType().GetProperty("SqlState")?.GetValue(inner) as string) == "23505";
+
+                if (isPgDup)
+                    throw new BusinessRuleException("duplicate-transaction-id", tag: null,
+                        message: "One or more transaction IDs already exist.");
+
                 throw;
             }
         }
@@ -93,7 +94,7 @@ namespace PFM.Infrastructure.Persistence.Repositories
             }
 
 
-            // total before paging
+            // Total before paging
             var total = await query.CountAsync(cancellationToken);
 
             // Apply paging

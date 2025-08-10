@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PFM.Domain.Entities;
+using PFM.Domain.Exceptions;
 using PFM.Domain.Interfaces;
 
 namespace PFM.Infrastructure.Persistence.Repositories
@@ -15,23 +16,29 @@ namespace PFM.Infrastructure.Persistence.Repositories
 
         public async Task UpsertRangeAsync(IEnumerable<Category> categories, CancellationToken cancellationToken)
         {
-            foreach (var cat in categories)
-            {
-                var existing = await _ctx.Categories.FindAsync([cat.Code], cancellationToken);
-                if (existing != null)
-                {
-                    existing.Name = cat.Name;
-                    existing.ParentCode = cat.ParentCode;
-                }
-                else
-                {
-                    await _ctx.Categories.AddAsync(cat, cancellationToken);
-                }
-            }
+            await _ctx.Categories.AddRangeAsync(categories, cancellationToken);
         }
 
-        public Task SaveChangesAsync(CancellationToken cancellationToken)
-            => _ctx.SaveChangesAsync(cancellationToken);
+        public async Task SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            try
+            {
+                await _ctx.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException dbEx)
+            {
+                var inner = dbEx.InnerException;
+                var isPgDup =
+                    inner?.GetType().Name == "PostgresException" &&
+                    (inner.GetType().GetProperty("SqlState")?.GetValue(inner) as string) == "23505";
+
+                if (isPgDup)
+                    throw new BusinessRuleException("category-already-exists", tag: null,
+                        message: "One or more category codes already exist.");
+
+                throw;
+            }
+        }
 
         public async Task<Category?> GetByCodeAsync(string code, CancellationToken cancellationToken)
             => await _ctx.Categories.FindAsync([code], cancellationToken);

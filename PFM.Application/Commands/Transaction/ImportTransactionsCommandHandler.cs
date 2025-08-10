@@ -1,6 +1,7 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using FluentValidation;
+using FluentValidation.Results;
 using MediatR;
 using PFM.Application.Dtos;
 using PFM.Domain.Enums;
@@ -35,8 +36,27 @@ namespace PFM.Application.Commands.Transaction
                 TrimOptions = TrimOptions.Trim
             };
 
-            using var csv = new CsvReader(reader, config);
-            var records = csv.GetRecords<TransactionCsvDto>().ToList();
+            List<TransactionCsvDto> records;
+            try
+            {
+                using var csv = new CsvReader(reader, config);
+                records = csv.GetRecords<TransactionCsvDto>().ToList();
+            }
+            catch (HeaderValidationException)
+            {
+                throw new FluentValidation.ValidationException(new[]
+                { new ValidationFailure("file", "CSV is empty or the header row is missing/invalid.") });
+            }
+            catch (ReaderException)
+            {
+                throw new FluentValidation.ValidationException(new[]
+                { new ValidationFailure("file", "CSV content is malformed and cannot be read.") });
+            }
+            catch (CsvHelperException)
+            {
+                throw new FluentValidation.ValidationException(new[]
+                { new ValidationFailure("file", "CSV parsing failed due to invalid format.") });
+            }
 
             // 1) DTO validation
             var failures = new List<FluentValidation.Results.ValidationFailure>();
