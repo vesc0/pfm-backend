@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using PFM.API.Contracts;
 using PFM.API.Models;
 using PFM.Application.Commands.Transaction;
 using PFM.Application.Dtos;
@@ -18,23 +19,16 @@ namespace PFM.API.Controllers
 
         [HttpPost("import")]
         [Consumes("multipart/form-data")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(440)]  // Business‐policy violations (DomainException)
-        public async Task<IActionResult> Import(IFormFile file)
+        public async Task<IActionResult> Import([FromForm] ImportFileDto form)
         {
-            if (file is null)
-                return BadRequest(new { error = "A CSV file must be provided." });
+            await using var stream = form.File!.OpenReadStream();
+            await _mediator.Send(new ImportTransactionsCommand(stream));
 
-            if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
-                return BadRequest(new { error = "Only .csv files are supported." });
-
-            await using var stream = file.OpenReadStream();
-            var cmd = new ImportTransactionsCommand(stream);
-            await _mediator.Send(cmd);
-
-            return NoContent();
+            return Ok("Transactions imported successfully.");
         }
 
         [HttpGet]
@@ -49,12 +43,10 @@ namespace PFM.API.Controllers
         [FromQuery(Name = "sort-by")] string? sortBy = "date",
         [FromQuery(Name = "sort-order")] string? sortOrder = "asc")
         {
-   
-            var query = new ListTransactionsQuery(
-                startDate, endDate, kinds,
-                sortBy, sortOrder, page, pageSize);
 
+            var query = new ListTransactionsQuery(startDate, endDate, kinds, sortBy, sortOrder, page, pageSize);
             var result = await _mediator.Send(query);
+
             return Ok(result);
         }
 
@@ -67,14 +59,12 @@ namespace PFM.API.Controllers
             [FromRoute] string id,
             [FromBody] CategorizeTransactionRequest body)
         {
-            var cmd = new CategorizeTransactionCommand(id, body.CatCode);
-
-            await _mediator.Send(cmd);
-            return Ok();
+            await _mediator.Send(new CategorizeTransactionCommand(id, body.CatCode));
+            return Ok("Transaction categorized.");
         }
 
         [HttpPost("{id}/split")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Split(string id, [FromBody] SplitTransactionRequestDto request)
@@ -82,14 +72,8 @@ namespace PFM.API.Controllers
             if (request.Splits == null || !request.Splits.Any())
                 return BadRequest(new { error = "At least one split is required." });
 
-            var cmd = new SplitTransactionCommand
-            {
-                TransactionId = id,
-                Splits = request.Splits
-            };
-
-            await _mediator.Send(cmd);
-            return NoContent();
+            await _mediator.Send(new SplitTransactionCommand { TransactionId = id, Splits = request.Splits });
+            return Ok("Transaction splitted.");
         }
 
         [HttpPost("auto-categorize")]

@@ -16,30 +16,33 @@ namespace PFM.API.Filters
 
             switch (ex)
             {
+                // 400 — validation (FluentValidation or manually thrown)
                 case ValidationException fv:
                     status = StatusCodes.Status400BadRequest;
 
-                    // build array of { tag, error, message }
                     var errorItems = fv.Errors.Select(f => new
                     {
-                        tag = KebabCaseNamingPolicy.Instance.ConvertName(f.PropertyName),
-                        error = f.ErrorCode,
+                        tag     = string.IsNullOrWhiteSpace(f.PropertyName) ? null
+                                  : KebabCaseNamingPolicy.Instance.ConvertName(f.PropertyName),
+                        error   = "validation-error",
                         message = f.ErrorMessage
-                    })
-                    .ToArray();
+                    }).ToArray();
 
-                    body = new { errors = errorItems };
+                    body = new { errors = errorItems.Length > 0 ? errorItems : new[] {
+                        new { tag = (string?)null, error = "validation-error", message = fv.Message }
+                    }};
                     break;
 
-                case DomainException de:
-                    status = 440; // business‐policy error
+                // 440 — business policy with machine code from the spec
+                case BusinessRuleException bre:
+                    status = 440;
                     body = new
                     {
                         errors = new[] {
                             new {
-                                tag     = (string?)null,
-                                error   = "domain-exception",
-                                message = de.Message
+                                tag     = bre.Tag,
+                                error   = bre.Code,
+                                message = bre.Message
                             }
                         }
                     };

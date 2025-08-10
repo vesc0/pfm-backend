@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using PFM.API.Contracts;
 using PFM.Application.Commands.Category;
 using PFM.Application.Queries.Category;
 
@@ -16,22 +17,16 @@ namespace PFM.API.Controllers
 
         [HttpPost("import")]
         [Consumes("multipart/form-data")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Import(IFormFile file)
+        [ProducesResponseType(440)]  // Business‐policy violations (DomainException)
+        public async Task<IActionResult> Import([FromForm] ImportFileDto form)
         {
-            if (file is null)
-                return BadRequest(new { error = "A CSV file must be provided." });
+            await using var stream = form.File!.OpenReadStream();
+            await _mediator.Send(new ImportCategoriesCommand(stream));
 
-            if (!file.FileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase))
-                return BadRequest(new { error = "Only .csv files are supported." });
-
-            await using var stream = file.OpenReadStream();
-            var cmd = new ImportCategoriesCommand(stream);
-            await _mediator.Send(cmd);
-
-            return NoContent();
+            return Ok("Categories imported successfully.");
         }
 
         [HttpGet]
