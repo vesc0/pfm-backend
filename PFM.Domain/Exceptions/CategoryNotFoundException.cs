@@ -1,8 +1,10 @@
 namespace PFM.Domain.Exceptions
 {
-    public class CategoryNotFoundException : DomainException
+    public class CategoryNotFoundException : BusinessRuleException
     {
         public CategoryNotFoundException(string code)
-            : base($"Category with code '{code}' was not found.") { }
+            : base("category-not-found", "Category not found.", $"Category with code '{code}' was not found.")
+        {
+        }
     }
 }

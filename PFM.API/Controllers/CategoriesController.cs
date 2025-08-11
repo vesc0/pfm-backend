@@ -30,6 +30,8 @@ namespace PFM.API.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(440)]  // Business‐policy violations (DomainException)
         public async Task<IActionResult> GetCategories([FromQuery(Name = "parent-id")] string? parentId)
         {
             var result = await _mediator.Send(new GetCategoriesQuery { ParentId = parentId });

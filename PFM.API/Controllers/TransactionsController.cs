@@ -66,12 +66,9 @@ namespace PFM.API.Controllers
         [HttpPost("{id}/split")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(440)] // OAS3: business policy error
         public async Task<IActionResult> Split(string id, [FromBody] SplitTransactionRequestDto request)
         {
-            if (request.Splits == null || !request.Splits.Any())
-                return BadRequest(new { error = "At least one split is required." });
-
             await _mediator.Send(new SplitTransactionCommand { TransactionId = id, Splits = request.Splits });
             return Ok("Transaction splitted.");
         }

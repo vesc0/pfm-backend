@@ -13,8 +13,8 @@ namespace PFM.Application.Commands.Transaction
 
         public async Task<AutoCategorizeResultDto> Handle(AutoCategorizeTransactionsCommand request, CancellationToken ct)
         {
-            var count = await _svc.ApplyRulesAsync(ct);
-            return new AutoCategorizeResultDto { CategorizedCount = count };
+            var summary = await _svc.ApplyRulesAsync(ct);
+            return summary;
         }
     }
 }

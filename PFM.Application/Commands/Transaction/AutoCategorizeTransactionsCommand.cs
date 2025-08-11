@@ -7,5 +7,7 @@ namespace PFM.Application.Commands.Transaction
     public class AutoCategorizeResultDto
     {
         public int CategorizedCount { get; set; }
+        public int TotalTransactionCount { get; set; }
+        public decimal CategorizedPercentage { get; set; }
     }
 }

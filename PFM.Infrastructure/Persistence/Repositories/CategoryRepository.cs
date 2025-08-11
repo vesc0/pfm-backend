@@ -33,8 +33,9 @@ namespace PFM.Infrastructure.Persistence.Repositories
                     (inner.GetType().GetProperty("SqlState")?.GetValue(inner) as string) == "23505";
 
                 if (isPgDup)
-                    throw new BusinessRuleException("category-already-exists", tag: null,
-                        message: "One or more category codes already exist.");
+                    throw new BusinessRuleException("category-already-exists",
+                        message: "Category already exists.",
+                        details: "One or more category codes already exist.");
 
                 throw;
             }

@@ -1,8 +1,10 @@
 namespace PFM.Domain.Exceptions
 {
-    public class TransactionNotFoundException : DomainException
+    public class TransactionNotFoundException : BusinessRuleException
     {
         public TransactionNotFoundException(string id)
-            : base($"Transaction with id '{id}' was not found.") { }
+            : base("transaction-not-found", "Transaction not found.", $"Transaction with id '{id}' was not found.")
+        {
+        }
     }
 }

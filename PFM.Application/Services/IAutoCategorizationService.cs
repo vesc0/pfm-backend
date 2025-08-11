@@ -1,7 +1,9 @@
+using PFM.Application.Commands.Transaction;
+
 namespace PFM.Application.Services
 {
     public interface IAutoCategorizationService
     {
-        Task<int> ApplyRulesAsync(CancellationToken cancellationToken);
+        Task<AutoCategorizeResultDto> ApplyRulesAsync(CancellationToken cancellationToken);
     }
 }

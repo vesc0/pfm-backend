@@ -22,15 +22,18 @@ namespace PFM.API.Filters
 
                     var errorItems = fv.Errors.Select(f => new
                     {
-                        tag     = string.IsNullOrWhiteSpace(f.PropertyName) ? null
+                        tag = string.IsNullOrWhiteSpace(f.PropertyName) ? null
                                   : KebabCaseNamingPolicy.Instance.ConvertName(f.PropertyName),
-                        error   = "validation-error",
+                        error = "validation-error",
                         message = f.ErrorMessage
                     }).ToArray();
 
-                    body = new { errors = errorItems.Length > 0 ? errorItems : new[] {
+                    body = new
+                    {
+                        errors = errorItems.Length > 0 ? errorItems : new[] {
                         new { tag = (string?)null, error = "validation-error", message = fv.Message }
-                    }};
+                    }
+                    };
                     break;
 
                 // 440 — business policy with machine code from the spec
@@ -38,13 +41,9 @@ namespace PFM.API.Filters
                     status = 440;
                     body = new
                     {
-                        errors = new[] {
-                            new {
-                                tag     = bre.Tag,
-                                error   = bre.Code,
-                                message = bre.Message
-                            }
-                        }
+                        problem = bre.Code,
+                        message = bre.Message,
+                        details = bre.Details
                     };
                     break;
 

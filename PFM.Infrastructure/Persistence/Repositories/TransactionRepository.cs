@@ -32,8 +32,9 @@ namespace PFM.Infrastructure.Persistence.Repositories
                     (inner.GetType().GetProperty("SqlState")?.GetValue(inner) as string) == "23505";
 
                 if (isPgDup)
-                    throw new BusinessRuleException("duplicate-transaction-id", tag: null,
-                        message: "One or more transaction IDs already exist.");
+                    throw new BusinessRuleException("duplicate-transaction-id",
+                        message: "Duplicate transaction ID.",
+                        details: "One or more transaction IDs already exist.");
 
                 throw;
             }
