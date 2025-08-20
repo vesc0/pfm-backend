@@ -28,7 +28,7 @@ namespace PFM.API.Controllers
             await using var stream = form.File!.OpenReadStream();
             await _mediator.Send(new ImportTransactionsCommand(stream));
 
-            return Ok("Transactions imported successfully.");
+            return Ok(new { message = "Transactions imported successfully." });
         }
 
         [HttpGet]
@@ -60,7 +60,7 @@ namespace PFM.API.Controllers
             [FromBody] CategorizeTransactionRequest body)
         {
             await _mediator.Send(new CategorizeTransactionCommand(id, body.CatCode));
-            return Ok("Transaction categorized.");
+            return Ok(new { message = "Transaction categorized." });
         }
 
         [HttpPost("{id}/split")]
@@ -70,7 +70,7 @@ namespace PFM.API.Controllers
         public async Task<IActionResult> Split(string id, [FromBody] SplitTransactionRequestDto request)
         {
             await _mediator.Send(new SplitTransactionCommand { TransactionId = id, Splits = request.Splits });
-            return Ok("Transaction splitted.");
+            return Ok(new { message = "Transaction splitted." });
         }
 
         [HttpPost("auto-categorize")]

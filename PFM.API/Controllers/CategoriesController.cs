@@ -26,7 +26,7 @@ namespace PFM.API.Controllers
             await using var stream = form.File!.OpenReadStream();
             await _mediator.Send(new ImportCategoriesCommand(stream));
 
-            return Ok("Categories imported successfully.");
+            return Ok(new { message = "Categories imported successfully." });
         }
 
         [HttpGet]
