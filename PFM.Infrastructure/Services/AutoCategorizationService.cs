@@ -1,8 +1,12 @@
+using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using PFM.Application.Commands.Transaction;
 using PFM.Application.Options;
 using PFM.Application.Services;
+using PFM.Domain.Entities;
+using PFM.Domain.Enums;
+using PFM.Domain.Exceptions;
 using PFM.Infrastructure.Persistence;
 
 namespace PFM.Infrastructure.Services
@@ -24,18 +28,18 @@ namespace PFM.Infrastructure.Services
 
             foreach (var rule in _opts.Rules)
             {
-                var sql = $"SELECT * FROM transactions WHERE cat_code IS NULL AND {rule.Predicate}";
-                var toUpdate = await _db.Transactions
-                    .FromSqlRaw(sql)
-                    .ToListAsync(ct);
+                IQueryable<Transaction> query = _db.Transactions
+                    .Where(t => t.CatCode == null);
+
+                query = ApplyPredicate(query, rule.Predicate);
+
+                var toUpdate = await query.ToListAsync(ct);
 
                 foreach (var tx in toUpdate)
                 {
-                    // Only update if not already updated and category is still null
-                    if (!updatedTransactionIds.Contains(tx.Id) && string.IsNullOrEmpty(tx.CatCode))
+                    if (updatedTransactionIds.Add(tx.Id))
                     {
                         tx.CatCode = rule.CatCode;
-                        updatedTransactionIds.Add(tx.Id);
                     }
                 }
             }
@@ -53,6 +57,73 @@ namespace PFM.Infrastructure.Services
                     ? Math.Round((decimal)updatedTransactionIds.Count / totalTransactionCount * 100, 2)
                     : 0
             };
+        }
+
+        private static IQueryable<Transaction> ApplyPredicate(
+            IQueryable<Transaction> query,
+            string predicate)
+        {
+            var parts = predicate.Split(" OR ", StringSplitOptions.RemoveEmptyEntries);
+
+            IQueryable<Transaction>? combined = null;
+
+            foreach (var part in parts)
+            {
+                var trimmed = part.Trim();
+
+                // mcc = 1234
+                var mccEq = Regex.Match(trimmed, @"^mcc\s*=\s*(\d+)$", RegexOptions.IgnoreCase);
+                if (mccEq.Success)
+                {
+                    var value = int.Parse(mccEq.Groups[1].Value);
+                    var mcc = (MccEnum)value;
+                    combined = Or(combined, query.Where(t => t.Mcc == mcc));
+                    continue;
+                }
+
+                // mcc IN (1,2,3)
+                var mccIn = Regex.Match(trimmed, @"^mcc\s+IN\s*\(([\d,\s]+)\)$", RegexOptions.IgnoreCase);
+                if (mccIn.Success)
+                {
+                    var values = mccIn.Groups[1].Value
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(v => (MccEnum)int.Parse(v.Trim()))
+                        .ToList();
+
+                    combined = Or(combined, query.Where(t => t.Mcc.HasValue && values.Contains(t.Mcc.Value)));
+                    continue;
+                }
+
+                // LOWER(beneficiary_name) LIKE '%text%'
+                var like = Regex.Match(
+                    trimmed,
+                    @"^LOWER\(beneficiary_name\)\s+LIKE\s+'%(.+)%'$",
+                    RegexOptions.IgnoreCase);
+
+                if (like.Success)
+                {
+                    var value = like.Groups[1].Value.ToLowerInvariant();
+                    combined = Or(
+                        combined,
+                        query.Where(t =>
+                            t.BeneficiaryName != null &&
+                            EF.Functions.ILike(t.BeneficiaryName, $"%{value}%")));
+                    continue;
+                }
+
+                throw new UnsupportedPredicateException(predicate);
+            }
+
+            return combined ?? query;
+        }
+
+        private static IQueryable<Transaction> Or(
+            IQueryable<Transaction>? left,
+            IQueryable<Transaction> right)
+        {
+            return left == null
+                ? right
+                : left.Concat(right).Distinct();
         }
     }
 }

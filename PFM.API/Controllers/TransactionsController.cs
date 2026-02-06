@@ -75,6 +75,7 @@ namespace PFM.API.Controllers
 
         [HttpPost("auto-categorize")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(440)]
         public async Task<IActionResult> AutoCategorize()
         {
             var result = await _mediator.Send(new AutoCategorizeTransactionsCommand());
