@@ -5,13 +5,12 @@ using PFM.Domain.Interfaces;
 
 namespace PFM.Application.Queries.SpendingAnalytics
 {
-    public class SpendingAnalyticsQueryHandler
-        : IRequestHandler<SpendingAnalyticsQuery, SpendingsByCategoryDto>
+    public class SpendingAnalyticsQueryHandler : IRequestHandler<SpendingAnalyticsQuery, SpendingsByCategoryDto>
     {
-        private readonly ITransactionReadRepository _txReadRepo;
+        private readonly ITransactionRepository _txRepo;
 
-        public SpendingAnalyticsQueryHandler(ITransactionReadRepository txReadRepo)
-            => _txReadRepo = txReadRepo;
+        public SpendingAnalyticsQueryHandler(ITransactionRepository txRepo)
+            => _txRepo = txRepo;
 
         public async Task<SpendingsByCategoryDto> Handle(SpendingAnalyticsQuery request, CancellationToken cancellationToken)
         {
@@ -35,7 +34,7 @@ namespace PFM.Application.Queries.SpendingAnalytics
             }
 
             // fetch raw (CatCode, Amount, Count)
-            var raw = await _txReadRepo.GetAnalyticsRawAsync(
+            var raw = await _txRepo.GetAnalyticsRawAsync(
                 request.Category,
                 start,
                 end,

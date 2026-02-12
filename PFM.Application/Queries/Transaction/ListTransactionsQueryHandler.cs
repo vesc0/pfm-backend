@@ -6,13 +6,12 @@ using PFM.Domain.Interfaces;
 
 namespace PFM.Application.Queries.Transaction
 {
-    public class ListTransactionsQueryHandler
-        : IRequestHandler<ListTransactionsQuery, PagedResult<TransactionDto>>
+    public class ListTransactionsQueryHandler : IRequestHandler<ListTransactionsQuery, PagedResult<TransactionDto>>
     {
-        private readonly ITransactionReadRepository _readRepo;
+        private readonly ITransactionRepository _repo;
 
-        public ListTransactionsQueryHandler(ITransactionReadRepository readRepo)
-            => _readRepo = readRepo;
+        public ListTransactionsQueryHandler(ITransactionRepository repo)
+            => _repo = repo;
 
         public async Task<PagedResult<TransactionDto>> Handle(ListTransactionsQuery request, CancellationToken cancellationToken)
         {
@@ -27,7 +26,7 @@ namespace PFM.Application.Queries.Transaction
                 .ToList();
 
             // Query the repository
-            var (entities, total) = await _readRepo.ListAsync(
+            var (entities, total) = await _repo.ListAsync(
                 request.StartDate,
                 request.EndDate,
                 kindsList,

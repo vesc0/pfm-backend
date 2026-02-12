@@ -7,8 +7,8 @@ namespace PFM.Application.Queries.Category
 {
     public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, List<CategoryDto>>
     {
-        private readonly ICategoryReadRepository _repo;
-        public GetCategoriesQueryHandler(ICategoryReadRepository repo) => _repo = repo;
+        private readonly ICategoryRepository _repo;
+        public GetCategoriesQueryHandler(ICategoryRepository repo) => _repo = repo;
 
         public async Task<List<CategoryDto>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
         {

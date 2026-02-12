@@ -6,7 +6,7 @@ using PFM.Domain.Enums;
 
 namespace PFM.Infrastructure.Persistence.Repositories
 {
-    public class TransactionRepository : ITransactionRepository, ITransactionReadRepository
+    public class TransactionRepository : ITransactionRepository
     {
         private readonly AppDbContext _ctx;
 

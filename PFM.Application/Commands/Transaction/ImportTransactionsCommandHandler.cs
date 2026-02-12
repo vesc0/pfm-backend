@@ -12,8 +12,7 @@ using DTransaction = PFM.Domain.Entities.Transaction;
 
 namespace PFM.Application.Commands.Transaction
 {
-    public class ImportTransactionsCommandHandler
-        : IRequestHandler<ImportTransactionsCommand, Unit>
+    public class ImportTransactionsCommandHandler : IRequestHandler<ImportTransactionsCommand, Unit>
     {
         private readonly ITransactionRepository _repository;
         private readonly IValidator<TransactionCsvDto> _dtoValidator;

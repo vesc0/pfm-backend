@@ -2,8 +2,7 @@ using FluentValidation;
 
 namespace PFM.Application.Commands.Transaction
 {
-    public class ImportTransactionsCommandValidator
-        : AbstractValidator<ImportTransactionsCommand>
+    public class ImportTransactionsCommandValidator : AbstractValidator<ImportTransactionsCommand>
     {
         public ImportTransactionsCommandValidator()
         {

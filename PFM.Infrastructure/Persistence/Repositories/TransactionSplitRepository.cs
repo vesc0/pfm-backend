@@ -4,7 +4,7 @@ using PFM.Domain.Interfaces;
 
 namespace PFM.Infrastructure.Persistence.Repositories
 {
-    public class TransactionSplitRepository : ITransactionSplitRepository, ITransactionSplitReadRepository
+    public class TransactionSplitRepository : ITransactionSplitRepository
     {
         private readonly AppDbContext _ctx;
 
@@ -36,9 +36,5 @@ namespace PFM.Infrastructure.Persistence.Repositories
 
         public Task SaveChangesAsync(CancellationToken cancellationToken)
             => _ctx.SaveChangesAsync(cancellationToken);
-
-        public async Task<Transaction?> GetByIdAsync(string id, CancellationToken cancellationToken)
-            => await _ctx.Transactions.FindAsync([id], cancellationToken);
-
     }
 }

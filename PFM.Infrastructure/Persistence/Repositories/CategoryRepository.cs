@@ -5,7 +5,7 @@ using PFM.Domain.Interfaces;
 
 namespace PFM.Infrastructure.Persistence.Repositories
 {
-    public class CategoryRepository : ICategoryRepository, ICategoryReadRepository
+    public class CategoryRepository : ICategoryRepository
     {
         private readonly AppDbContext _ctx;
 

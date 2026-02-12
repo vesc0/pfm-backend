@@ -25,11 +25,8 @@ namespace PFM.Infrastructure
 
             // 2) Wire up repositories
             services.AddScoped<ITransactionRepository, TransactionRepository>();
-            services.AddScoped<ITransactionReadRepository, TransactionRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ITransactionSplitRepository, TransactionSplitRepository>();
-            services.AddScoped<ITransactionSplitReadRepository, TransactionSplitRepository>();
-            services.AddScoped<ICategoryReadRepository, CategoryRepository>();
             services.AddScoped<IAutoCategorizationService, AutoCategorizationService>();
 
             return services;
