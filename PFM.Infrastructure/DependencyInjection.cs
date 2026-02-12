@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PFM.Application.Options;
-using PFM.Application.Services;
 using PFM.Domain.Interfaces;
+using PFM.Domain.Options;
 using PFM.Infrastructure.Persistence;
 using PFM.Infrastructure.Persistence.Repositories;
 using PFM.Infrastructure.Services;

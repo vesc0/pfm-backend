@@ -1,12 +1,12 @@
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using PFM.Application.Dtos;
-using PFM.Application.Options;
-using PFM.Application.Services;
 using PFM.Domain.Entities;
 using PFM.Domain.Enums;
 using PFM.Domain.Exceptions;
+using PFM.Domain.Interfaces;
+using PFM.Domain.Models;
+using PFM.Domain.Options;
 using PFM.Infrastructure.Persistence;
 
 namespace PFM.Infrastructure.Services
@@ -22,7 +22,7 @@ namespace PFM.Infrastructure.Services
             _opts = opts.Value;
         }
 
-        public async Task<AutoCategorizeResultDto> ApplyRulesAsync(CancellationToken ct)
+        public async Task<AutoCategorizeResult> ApplyRulesAsync(CancellationToken ct)
         {
             var updatedTransactionIds = new HashSet<string>();
 
@@ -49,7 +49,7 @@ namespace PFM.Infrastructure.Services
 
             var totalTransactionCount = await _db.Transactions.CountAsync(ct);
 
-            return new AutoCategorizeResultDto
+            return new AutoCategorizeResult
             {
                 CategorizedCount = updatedTransactionIds.Count,
                 TotalTransactionCount = totalTransactionCount,
@@ -117,9 +117,7 @@ namespace PFM.Infrastructure.Services
             return combined ?? query;
         }
 
-        private static IQueryable<Transaction> Or(
-            IQueryable<Transaction>? left,
-            IQueryable<Transaction> right)
+        private static IQueryable<Transaction> Or(IQueryable<Transaction>? left, IQueryable<Transaction> right)
         {
             return left == null
                 ? right

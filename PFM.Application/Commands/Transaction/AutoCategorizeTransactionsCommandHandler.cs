@@ -1,6 +1,6 @@
 using MediatR;
 using PFM.Application.Dtos;
-using PFM.Application.Services;
+using PFM.Domain.Interfaces;
 
 namespace PFM.Application.Commands.Transaction
 {
@@ -13,8 +13,14 @@ namespace PFM.Application.Commands.Transaction
 
         public async Task<AutoCategorizeResultDto> Handle(AutoCategorizeTransactionsCommand request, CancellationToken ct)
         {
-            var summary = await _svc.ApplyRulesAsync(ct);
-            return summary;
+            var result = await _svc.ApplyRulesAsync(ct);
+            
+            return new AutoCategorizeResultDto
+            {
+                CategorizedCount = result.CategorizedCount,
+                TotalTransactionCount = result.TotalTransactionCount,
+                CategorizedPercentage = result.CategorizedPercentage
+            };
         }
     }
 }

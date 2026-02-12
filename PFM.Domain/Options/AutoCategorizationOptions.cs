@@ -1,4 +1,4 @@
-namespace PFM.Application.Options
+namespace PFM.Domain.Options
 {
     public class AutoCategorizationOptions
     {
