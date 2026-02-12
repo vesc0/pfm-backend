@@ -6,7 +6,5 @@ namespace PFM.Domain.Interfaces
     {
         Task UpsertRangeAsync(IEnumerable<Category> categories, CancellationToken cancellationToken);
         Task SaveChangesAsync(CancellationToken cancellationToken);
-        Task<Category?> GetByCodeAsync(string code, CancellationToken cancellationToken);
-        Task<List<Category>> GetAllAsync(CancellationToken cancellationToken);
     }
 }

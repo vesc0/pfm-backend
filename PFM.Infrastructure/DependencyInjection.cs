@@ -28,6 +28,7 @@ namespace PFM.Infrastructure
             services.AddScoped<ITransactionReadRepository, TransactionRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ITransactionSplitRepository, TransactionSplitRepository>();
+            services.AddScoped<ITransactionSplitReadRepository, TransactionSplitRepository>();
             services.AddScoped<ICategoryReadRepository, CategoryRepository>();
             services.AddScoped<IAutoCategorizationService, AutoCategorizationService>();
 

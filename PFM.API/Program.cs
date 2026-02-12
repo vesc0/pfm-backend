@@ -41,7 +41,7 @@ builder.Services
         });
 
 builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<PFM.API.Contracts.ImportFileDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<PFM.API.Contracts.ImportFileRequestValidator>();
 
 // Override the automatic 400 response
 builder.Services.Configure<ApiBehaviorOptions>(options =>

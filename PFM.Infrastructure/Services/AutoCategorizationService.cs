@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using PFM.Application.Commands.Transaction;
+using PFM.Application.Dtos;
 using PFM.Application.Options;
 using PFM.Application.Services;
 using PFM.Domain.Entities;

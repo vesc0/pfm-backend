@@ -2,14 +2,14 @@ using FluentValidation;
 
 namespace PFM.API.Contracts;
 
-public sealed class ImportFileDto
+public sealed class ImportFileRequest
 {
     public IFormFile? File { get; init; }
 }
 
-public sealed class ImportFileDtoValidator : AbstractValidator<ImportFileDto>
+public sealed class ImportFileRequestValidator : AbstractValidator<ImportFileRequest>
 {
-    public ImportFileDtoValidator()
+    public ImportFileRequestValidator()
     {
         RuleFor(x => x.File)
             .Cascade(CascadeMode.Stop)

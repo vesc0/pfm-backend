@@ -6,6 +6,5 @@ namespace PFM.Domain.Interfaces
     {
         Task AddRangeAsync(IEnumerable<Transaction> transactions, CancellationToken cancellationToken);
         Task SaveChangesAsync(CancellationToken cancellationToken);
-        Task<Transaction?> GetByIdAsync(string id, CancellationToken cancellationToken);
     }
 }

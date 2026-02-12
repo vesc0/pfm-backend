@@ -1,9 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using PFM.API.Contracts;
-using PFM.API.Models;
 using PFM.Application.Commands.Transaction;
-using PFM.Application.Dtos;
 using PFM.Application.Queries.Transaction;
 
 namespace PFM.API.Controllers
@@ -23,7 +21,7 @@ namespace PFM.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(440)]  // Business‐policy violations (DomainException)
-        public async Task<IActionResult> Import([FromForm] ImportFileDto form)
+        public async Task<IActionResult> Import([FromForm] ImportFileRequest form)
         {
             await using var stream = form.File!.OpenReadStream();
             await _mediator.Send(new ImportTransactionsCommand(stream));
@@ -67,7 +65,7 @@ namespace PFM.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(440)] // OAS3: business policy error
-        public async Task<IActionResult> Split(string id, [FromBody] SplitTransactionRequestDto request)
+        public async Task<IActionResult> Split(string id, [FromBody] SplitTransactionRequest request)
         {
             await _mediator.Send(new SplitTransactionCommand { TransactionId = id, Splits = request.Splits });
             return Ok(new { message = "Transaction splitted." });

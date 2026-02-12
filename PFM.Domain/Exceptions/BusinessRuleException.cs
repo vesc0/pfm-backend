@@ -1,6 +1,6 @@
 namespace PFM.Domain.Exceptions
 {
-    public class BusinessRuleException : DomainException
+    public class BusinessRuleException : Exception
     {
         public string Code { get; }
         public string? Details { get; }
@@ -12,5 +12,4 @@ namespace PFM.Domain.Exceptions
             Details = details;
         }
     }
-
 }

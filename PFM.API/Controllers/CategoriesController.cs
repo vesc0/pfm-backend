@@ -21,7 +21,7 @@ namespace PFM.API.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(440)]  // Business‐policy violations (DomainException)
-        public async Task<IActionResult> Import([FromForm] ImportFileDto form)
+        public async Task<IActionResult> Import([FromForm] ImportFileRequest form)
         {
             await using var stream = form.File!.OpenReadStream();
             await _mediator.Send(new ImportCategoriesCommand(stream));

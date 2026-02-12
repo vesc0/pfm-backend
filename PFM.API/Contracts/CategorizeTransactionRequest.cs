@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace PFM.API.Models
+namespace PFM.API.Contracts
 {
     public class CategorizeTransactionRequest
     {

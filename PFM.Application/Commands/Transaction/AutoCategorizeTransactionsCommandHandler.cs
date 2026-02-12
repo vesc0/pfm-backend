@@ -1,10 +1,10 @@
 using MediatR;
+using PFM.Application.Dtos;
 using PFM.Application.Services;
 
 namespace PFM.Application.Commands.Transaction
 {
-    public class AutoCategorizeTransactionsCommandHandler
-        : IRequestHandler<AutoCategorizeTransactionsCommand, AutoCategorizeResultDto>
+    public class AutoCategorizeTransactionsCommandHandler : IRequestHandler<AutoCategorizeTransactionsCommand, AutoCategorizeResultDto>
     {
         private readonly IAutoCategorizationService _svc;
 

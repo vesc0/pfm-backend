@@ -4,7 +4,7 @@ using PFM.Domain.Interfaces;
 
 namespace PFM.Infrastructure.Persistence.Repositories
 {
-    public class TransactionSplitRepository : ITransactionSplitRepository
+    public class TransactionSplitRepository : ITransactionSplitRepository, ITransactionSplitReadRepository
     {
         private readonly AppDbContext _ctx;
 
