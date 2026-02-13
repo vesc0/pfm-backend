@@ -95,7 +95,11 @@ namespace PFM.Application.Commands.Transaction
                 };
             }).ToList();
 
-            // 3) Persist — all DB‐errors get translated inside the repository
+            // 3) Domain validation
+            foreach (var entity in entities)
+                entity.Validate();
+
+            // 4) Persist — all DB‐errors get translated inside the repository
             await _uow.Transactions.AddRangeAsync(entities, cancellationToken);
             await _uow.CompleteAsync(cancellationToken);
 

@@ -10,7 +10,8 @@ namespace PFM.Application.Commands.Transaction
                 .NotEmpty().WithMessage("TransactionId is required.");
 
             RuleFor(x => x.Splits)
-                .NotEmpty().WithMessage("At least one split is required.");
+                .NotNull().WithMessage("Splits are required.")
+                .Must(s => s.Count >= 2).WithMessage("At least 2 splits are required.");
 
             RuleForEach(x => x.Splits).SetValidator(new TransactionSplitDtoValidator());
         }

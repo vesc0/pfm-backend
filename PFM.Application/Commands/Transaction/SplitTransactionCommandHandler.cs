@@ -28,17 +28,15 @@ namespace PFM.Application.Commands.Transaction
             if (!foundCodes)
                 throw new BusinessRuleException("category-not-found", "Category not found.", "One or more categories do not exist.");
 
-            var splitSum = request.Splits.Sum(s => s.Amount);
-            if (splitSum != transaction.Amount)
-                throw new SplitAmountException();
-
-            // 4. Remove old splits (if any)
-            await _uow.Splits.DeleteByTransactionIdAsync(request.TransactionId, cancellationToken);
-
-            // 5. Add new splits
+            // Map and assign splits for aggregate-level domain validation
             var splits = _mapper.Map<List<TransactionSplit>>(request.Splits);
             splits.ForEach(s => s.TransactionId = request.TransactionId);
 
+            transaction.Splits = splits;
+            transaction.Validate();
+
+            // Remove old splits (if any) and persist new ones
+            await _uow.Splits.DeleteByTransactionIdAsync(request.TransactionId, cancellationToken);
             await _uow.Splits.AddRangeAsync(splits, cancellationToken);
             await _uow.CompleteAsync(cancellationToken);
 

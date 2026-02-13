@@ -69,7 +69,11 @@ namespace PFM.Application.Commands.Category
                 ParentCode = string.IsNullOrWhiteSpace(dto.ParentCode)
                                ? null
                                : dto.ParentCode.Trim()
-            });
+            }).ToList();
+
+            // Domain validation
+            foreach (var entity in entities)
+                entity.Validate();
 
             // Upsert and save
             await _uow.Categories.UpsertRangeAsync(entities, cancellationToken);
