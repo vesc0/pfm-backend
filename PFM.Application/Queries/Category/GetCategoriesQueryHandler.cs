@@ -7,14 +7,14 @@ namespace PFM.Application.Queries.Category
 {
     public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, List<CategoryDto>>
     {
-        private readonly ICategoryRepository _repo;
-        public GetCategoriesQueryHandler(ICategoryRepository repo) => _repo = repo;
+        private readonly IUnitOfWork _uow;
+        public GetCategoriesQueryHandler(IUnitOfWork uow) => _uow = uow;
 
         public async Task<List<CategoryDto>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
         {
             if (!string.IsNullOrWhiteSpace(request.ParentId))
             {
-                var exists = await _repo.ExistsAsync(new[] { request.ParentId }, cancellationToken);
+                var exists = await _uow.Categories.ExistsAsync(new[] { request.ParentId }, cancellationToken);
                 if (!exists)
                 {
                     throw new BusinessRuleException(
@@ -24,7 +24,7 @@ namespace PFM.Application.Queries.Category
                     );
                 }
             }
-            var categories = await _repo.ListAsync(request.ParentId, cancellationToken);
+            var categories = await _uow.Categories.ListAsync(request.ParentId, cancellationToken);
             return categories.Select(c => new CategoryDto
             {
                 Code = c.Code,

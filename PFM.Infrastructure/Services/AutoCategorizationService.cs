@@ -13,11 +13,13 @@ namespace PFM.Infrastructure.Services
 {
     public class AutoCategorizationService : IAutoCategorizationService
     {
+        private readonly IUnitOfWork _uow;
         private readonly AppDbContext _db;
         private readonly AutoCategorizationOptions _opts;
 
-        public AutoCategorizationService(AppDbContext db, IOptions<AutoCategorizationOptions> opts)
+        public AutoCategorizationService(IUnitOfWork uow, AppDbContext db, IOptions<AutoCategorizationOptions> opts)
         {
+            _uow = uow;
             _db = db;
             _opts = opts.Value;
         }
@@ -45,7 +47,7 @@ namespace PFM.Infrastructure.Services
             }
 
             if (updatedTransactionIds.Count > 0)
-                await _db.SaveChangesAsync(ct);
+                await _uow.CompleteAsync(ct);
 
             var totalTransactionCount = await _db.Transactions.CountAsync(ct);
 

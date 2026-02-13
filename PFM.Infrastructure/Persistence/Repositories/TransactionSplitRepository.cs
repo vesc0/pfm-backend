@@ -33,8 +33,5 @@ namespace PFM.Infrastructure.Persistence.Repositories
         {
             await _ctx.TransactionSplits.AddRangeAsync(splits, cancellationToken);
         }
-
-        public Task SaveChangesAsync(CancellationToken cancellationToken)
-            => _ctx.SaveChangesAsync(cancellationToken);
     }
 }

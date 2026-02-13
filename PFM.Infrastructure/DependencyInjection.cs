@@ -22,10 +22,8 @@ namespace PFM.Infrastructure
             services.Configure<AutoCategorizationOptions>(
                 configuration.GetSection("AutoCategorization"));
 
-            // 2) Wire up repositories
-            services.AddScoped<ITransactionRepository, TransactionRepository>();
-            services.AddScoped<ICategoryRepository, CategoryRepository>();
-            services.AddScoped<ITransactionSplitRepository, TransactionSplitRepository>();
+            // 2) Wire up Unit of Work
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IAutoCategorizationService, AutoCategorizationService>();
 
             return services;

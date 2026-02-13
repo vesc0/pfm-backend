@@ -12,6 +12,5 @@ namespace PFM.Domain.Interfaces
         
         // Write operations
         Task UpsertRangeAsync(IEnumerable<Category> categories, CancellationToken cancellationToken);
-        Task SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

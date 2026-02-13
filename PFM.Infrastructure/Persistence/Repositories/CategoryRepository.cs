@@ -19,28 +19,6 @@ namespace PFM.Infrastructure.Persistence.Repositories
             await _ctx.Categories.AddRangeAsync(categories, cancellationToken);
         }
 
-        public async Task SaveChangesAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await _ctx.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException dbEx)
-            {
-                var inner = dbEx.InnerException;
-                var isPgDup =
-                    inner?.GetType().Name == "PostgresException" &&
-                    (inner.GetType().GetProperty("SqlState")?.GetValue(inner) as string) == "23505";
-
-                if (isPgDup)
-                    throw new BusinessRuleException("category-already-exists",
-                        message: "Category already exists.",
-                        details: "One or more category codes already exist.");
-
-                throw;
-            }
-        }
-
         public async Task<Category?> GetByCodeAsync(string code, CancellationToken cancellationToken)
             => await _ctx.Categories.FindAsync([code], cancellationToken);
 

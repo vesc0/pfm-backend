@@ -18,28 +18,6 @@ namespace PFM.Infrastructure.Persistence.Repositories
         public async Task AddRangeAsync(IEnumerable<Transaction> transactions, CancellationToken cancellationToken)
             => await _ctx.Transactions.AddRangeAsync(transactions, cancellationToken);
 
-        public async Task SaveChangesAsync(CancellationToken cancellationToken)
-        {
-            try
-            {
-                await _ctx.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException dbEx)
-            {
-                var inner = dbEx.InnerException;
-                var isPgDup =
-                    inner?.GetType().Name == "PostgresException" &&
-                    (inner.GetType().GetProperty("SqlState")?.GetValue(inner) as string) == "23505";
-
-                if (isPgDup)
-                    throw new BusinessRuleException("duplicate-transaction-id",
-                        message: "Duplicate transaction ID.",
-                        details: "One or more transaction IDs already exist.");
-
-                throw;
-            }
-        }
-
         public async Task<(IReadOnlyList<Transaction> Items, int TotalCount)> ListAsync(
             DateTime? startDate,
             DateTime? endDate,

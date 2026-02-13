@@ -28,6 +28,5 @@ namespace PFM.Domain.Interfaces
         
         // Write operations
         Task AddRangeAsync(IEnumerable<Transaction> transactions, CancellationToken cancellationToken);
-        Task SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

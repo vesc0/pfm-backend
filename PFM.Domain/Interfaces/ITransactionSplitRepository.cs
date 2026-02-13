@@ -10,6 +10,5 @@ namespace PFM.Domain.Interfaces
         // Write operations
         Task DeleteByTransactionIdAsync(string transactionId, CancellationToken cancellationToken);
         Task AddRangeAsync(IEnumerable<TransactionSplit> splits, CancellationToken cancellationToken);
-        Task SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

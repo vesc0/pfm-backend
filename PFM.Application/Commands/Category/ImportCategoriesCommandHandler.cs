@@ -11,12 +11,12 @@ namespace PFM.Application.Commands.Category
 {
     public class ImportCategoriesCommandHandler : IRequestHandler<ImportCategoriesCommand, Unit>
     {
-        private readonly ICategoryRepository _repo;
+        private readonly IUnitOfWork _uow;
         private readonly IValidator<CategoryCsvDto> _dtoValidator;
 
-        public ImportCategoriesCommandHandler(ICategoryRepository repo, IValidator<CategoryCsvDto> dtoValidator)
+        public ImportCategoriesCommandHandler(IUnitOfWork uow, IValidator<CategoryCsvDto> dtoValidator)
         {
-            _repo = repo;
+            _uow = uow;
             _dtoValidator = dtoValidator;
         }
 
@@ -72,8 +72,8 @@ namespace PFM.Application.Commands.Category
             });
 
             // Upsert and save
-            await _repo.UpsertRangeAsync(entities, cancellationToken);
-            await _repo.SaveChangesAsync(cancellationToken);
+            await _uow.Categories.UpsertRangeAsync(entities, cancellationToken);
+            await _uow.CompleteAsync(cancellationToken);
 
             return Unit.Value;
         }

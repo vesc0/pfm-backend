@@ -7,10 +7,10 @@ namespace PFM.Application.Queries.SpendingAnalytics
 {
     public class SpendingAnalyticsQueryHandler : IRequestHandler<SpendingAnalyticsQuery, SpendingsByCategoryDto>
     {
-        private readonly ITransactionRepository _txRepo;
+        private readonly IUnitOfWork _uow;
 
-        public SpendingAnalyticsQueryHandler(ITransactionRepository txRepo)
-            => _txRepo = txRepo;
+        public SpendingAnalyticsQueryHandler(IUnitOfWork uow)
+            => _uow = uow;
 
         public async Task<SpendingsByCategoryDto> Handle(SpendingAnalyticsQuery request, CancellationToken cancellationToken)
         {
@@ -34,7 +34,7 @@ namespace PFM.Application.Queries.SpendingAnalytics
             }
 
             // fetch raw (CatCode, Amount, Count)
-            var raw = await _txRepo.GetAnalyticsRawAsync(
+            var raw = await _uow.Transactions.GetAnalyticsRawAsync(
                 request.Category,
                 start,
                 end,

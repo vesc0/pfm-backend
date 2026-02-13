@@ -14,12 +14,12 @@ namespace PFM.Application.Commands.Transaction
 {
     public class ImportTransactionsCommandHandler : IRequestHandler<ImportTransactionsCommand, Unit>
     {
-        private readonly ITransactionRepository _repository;
+        private readonly IUnitOfWork _uow;
         private readonly IValidator<TransactionCsvDto> _dtoValidator;
 
-        public ImportTransactionsCommandHandler(ITransactionRepository repository, IValidator<TransactionCsvDto> dtoValidator)
+        public ImportTransactionsCommandHandler(IUnitOfWork uow, IValidator<TransactionCsvDto> dtoValidator)
         {
-            _repository = repository;
+            _uow = uow;
             _dtoValidator = dtoValidator;
         }
 
@@ -96,8 +96,8 @@ namespace PFM.Application.Commands.Transaction
             }).ToList();
 
             // 3) Persist — all DB‐errors get translated inside the repository
-            await _repository.AddRangeAsync(entities, cancellationToken);
-            await _repository.SaveChangesAsync(cancellationToken);
+            await _uow.Transactions.AddRangeAsync(entities, cancellationToken);
+            await _uow.CompleteAsync(cancellationToken);
 
 
             return Unit.Value;

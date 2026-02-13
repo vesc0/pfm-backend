@@ -8,10 +8,10 @@ namespace PFM.Application.Queries.Transaction
 {
     public class ListTransactionsQueryHandler : IRequestHandler<ListTransactionsQuery, PagedResult<TransactionDto>>
     {
-        private readonly ITransactionRepository _repo;
+        private readonly IUnitOfWork _uow;
 
-        public ListTransactionsQueryHandler(ITransactionRepository repo)
-            => _repo = repo;
+        public ListTransactionsQueryHandler(IUnitOfWork uow)
+            => _uow = uow;
 
         public async Task<PagedResult<TransactionDto>> Handle(ListTransactionsQuery request, CancellationToken cancellationToken)
         {
@@ -26,7 +26,7 @@ namespace PFM.Application.Queries.Transaction
                 .ToList();
 
             // Query the repository
-            var (entities, total) = await _repo.ListAsync(
+            var (entities, total) = await _uow.Transactions.ListAsync(
                 request.StartDate,
                 request.EndDate,
                 kindsList,
