@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using PFM.Domain.Interfaces;
 using PFM.Application.Dtos;
@@ -8,7 +9,13 @@ namespace PFM.Application.Queries.Category
     public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, List<CategoryDto>>
     {
         private readonly IUnitOfWork _uow;
-        public GetCategoriesQueryHandler(IUnitOfWork uow) => _uow = uow;
+        private readonly IMapper _mapper;
+
+        public GetCategoriesQueryHandler(IUnitOfWork uow, IMapper mapper)
+        {
+            _uow = uow;
+            _mapper = mapper;
+        }
 
         public async Task<List<CategoryDto>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
         {
@@ -25,12 +32,7 @@ namespace PFM.Application.Queries.Category
                 }
             }
             var categories = await _uow.Categories.ListAsync(request.ParentId, cancellationToken);
-            return categories.Select(c => new CategoryDto
-            {
-                Code = c.Code,
-                Name = c.Name,
-                ParentCode = c.ParentCode
-            }).ToList();
+            return _mapper.Map<List<CategoryDto>>(categories);
         }
     }
 }

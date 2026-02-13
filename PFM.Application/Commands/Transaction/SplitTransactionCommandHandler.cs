@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using PFM.Domain.Entities;
 using PFM.Domain.Interfaces;
@@ -8,10 +9,12 @@ namespace PFM.Application.Commands.Transaction
     public class SplitTransactionCommandHandler : IRequestHandler<SplitTransactionCommand, Unit>
     {
         private readonly IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public SplitTransactionCommandHandler(IUnitOfWork uow)
+        public SplitTransactionCommandHandler(IUnitOfWork uow, IMapper mapper)
         {
             _uow = uow;
+            _mapper = mapper;
         }
 
         public async Task<Unit> Handle(SplitTransactionCommand request, CancellationToken cancellationToken)
@@ -33,12 +36,8 @@ namespace PFM.Application.Commands.Transaction
             await _uow.Splits.DeleteByTransactionIdAsync(request.TransactionId, cancellationToken);
 
             // 5. Add new splits
-            var splits = request.Splits.Select(s => new TransactionSplit
-            {
-                TransactionId = request.TransactionId,
-                Amount = s.Amount,
-                CatCode = s.CatCode
-            }).ToList();
+            var splits = _mapper.Map<List<TransactionSplit>>(request.Splits);
+            splits.ForEach(s => s.TransactionId = request.TransactionId);
 
             await _uow.Splits.AddRangeAsync(splits, cancellationToken);
             await _uow.CompleteAsync(cancellationToken);

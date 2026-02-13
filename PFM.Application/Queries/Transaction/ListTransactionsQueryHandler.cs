@@ -1,3 +1,4 @@
+using AutoMapper;
 using MediatR;
 using PFM.Application.Common.Pagination;
 using PFM.Application.Dtos;
@@ -9,9 +10,13 @@ namespace PFM.Application.Queries.Transaction
     public class ListTransactionsQueryHandler : IRequestHandler<ListTransactionsQuery, PagedResult<TransactionDto>>
     {
         private readonly IUnitOfWork _uow;
+        private readonly IMapper _mapper;
 
-        public ListTransactionsQueryHandler(IUnitOfWork uow)
-            => _uow = uow;
+        public ListTransactionsQueryHandler(IUnitOfWork uow, IMapper mapper)
+        {
+            _uow = uow;
+            _mapper = mapper;
+        }
 
         public async Task<PagedResult<TransactionDto>> Handle(ListTransactionsQuery request, CancellationToken cancellationToken)
         {
@@ -37,28 +42,7 @@ namespace PFM.Application.Queries.Transaction
                 cancellationToken);
 
             // Map domain entities to DTOs
-            var dtos = entities
-                .Select(t => new TransactionDto
-                {
-                    Id = t.Id,
-                    Date = t.Date,
-                    Direction = t.Direction,
-                    Amount = t.Amount,
-                    BeneficiaryName = t.BeneficiaryName,
-                    Description = t.Description,
-                    Currency = t.Currency,
-                    Mcc = (int?)t.Mcc,
-                    Kind = t.Kind,
-                    CatCode = t.CatCode,
-                    Splits = t.Splits
-                                .Select(s => new TransactionSplitDto
-                                {
-                                    Amount = s.Amount,
-                                    CatCode = s.CatCode
-                                })
-                                .ToList()
-                })
-                .ToList();
+            var dtos = _mapper.Map<List<TransactionDto>>(entities);
 
             // Wrap in PagedResult
             return new PagedResult<TransactionDto>

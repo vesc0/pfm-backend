@@ -14,6 +14,7 @@ namespace PFM.Application
             services
                 .AddMediatR(cfg => cfg.RegisterServicesFromAssembly(asm))
                 .AddValidatorsFromAssembly(asm)
+                .AddAutoMapper(asm)
                 .AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
             return services;
