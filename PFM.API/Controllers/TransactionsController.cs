@@ -80,5 +80,17 @@ namespace PFM.API.Controllers
             return Ok(result);
         }
 
+        [HttpPost("auto-categorize/upload")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(440)]
+        public async Task<IActionResult> AutoCategorizeUpload([FromForm] ImportYamlFileRequest form)
+        {
+            await using var stream = form.File!.OpenReadStream();
+            var result = await _mediator.Send(new AutoCategorizeFromFileCommand(stream));
+            return Ok(result);
+        }
+
     }
 }

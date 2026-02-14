@@ -1,6 +1,5 @@
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using PFM.Domain.Entities;
 using PFM.Domain.Enums;
 using PFM.Domain.Exceptions;
@@ -15,20 +14,18 @@ namespace PFM.Infrastructure.Services
     {
         private readonly IUnitOfWork _uow;
         private readonly AppDbContext _db;
-        private readonly AutoCategorizationOptions _opts;
 
-        public AutoCategorizationService(IUnitOfWork uow, AppDbContext db, IOptions<AutoCategorizationOptions> opts)
+        public AutoCategorizationService(IUnitOfWork uow, AppDbContext db)
         {
             _uow = uow;
             _db = db;
-            _opts = opts.Value;
         }
 
-        public async Task<AutoCategorizeResult> ApplyRulesAsync(CancellationToken ct)
+        public async Task<AutoCategorizeResult> ApplyRulesAsync(List<AutoCategorizationRule> rules, CancellationToken ct)
         {
             var updatedTransactionIds = new HashSet<string>();
 
-            foreach (var rule in _opts.Rules)
+            foreach (var rule in rules)
             {
                 IQueryable<Transaction> query = _db.Transactions
                     .Where(t => t.CatCode == null);
