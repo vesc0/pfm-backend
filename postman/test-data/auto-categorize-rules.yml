@@ -1,0 +1,17 @@
+rules:
+  - mcc: 5411
+    catcode: B1
+  - mcc: 5812
+    catcode: B2
+  - mcc: 5814
+    catcode: B2
+  - mcc: 5541
+    catcode: C1
+  - mcc: 4111
+    catcode: C2
+  - mcc: 6011
+    catcode: A
+  - mcc: 4900
+    catcode: E
+  - mcc: 5732
+    catcode: D

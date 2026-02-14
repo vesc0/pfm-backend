@@ -1,0 +1,11 @@
+id,beneficiary-name,date,direction,amount,description,currency,mcc,kind
+trx-001,Employer Inc,2025-01-15,c,3500.00,Monthly salary,EUR,6011,dep
+trx-002,SuperMarket,2025-01-16,d,85.50,Weekly groceries,EUR,5411,pmt
+trx-003,Gas Station,2025-01-17,d,60.00,Fuel for car,EUR,5541,pmt
+trx-004,Restaurant ABC,2025-01-18,d,45.00,Dinner with friends,EUR,5812,pmt
+trx-005,Electric Co,2025-01-19,d,120.00,Electricity bill,EUR,4900,pmt
+trx-006,Online Shop,2025-01-20,d,200.00,New headphones,EUR,5732,pmt
+trx-007,Bus Service,2025-01-21,d,30.00,Monthly bus pass,EUR,4111,pmt
+trx-008,Coffee House,2025-01-22,d,12.50,Morning coffee,EUR,5814,pmt
+trx-009,Freelance Client,2025-01-23,c,500.00,Freelance payment,EUR,6011,dep
+trx-010,Grocery Store,2025-01-24,d,92.30,Groceries,EUR,5411,pmt

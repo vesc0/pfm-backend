@@ -1,0 +1,19 @@
+{
+    "id": "pfm-env-local",
+    "name": "PFM Local",
+    "values": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:5138",
+            "type": "default",
+            "enabled": true
+        },
+        {
+            "key": "transactionId",
+            "value": "trx-001",
+            "type": "default",
+            "enabled": true
+        }
+    ],
+    "_postman_variable_scope": "environment"
+}

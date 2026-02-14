@@ -1,0 +1,10 @@
+code,parent-code,name
+A,,"Salary & Benefits"
+B,,"Food & Drinks"
+B1,B,"Groceries"
+B2,B,"Restaurants"
+C,,"Transportation"
+C1,C,"Fuel"
+C2,C,"Public Transport"
+D,,"Shopping"
+E,,"Utilities"
