@@ -1,6 +1,6 @@
 # Personal Finance Management Backend
 
-A .NET 8 application for managing personal finances with transaction tracking, categorization, and analytics.
+A .NET 10 application for managing personal finances with transaction tracking, categorization, and analytics.
 
 ## Contents
 
@@ -16,7 +16,7 @@ A .NET 8 application for managing personal finances with transaction tracking, c
 
 ## Tech Stack
 
-- **Framework**: .NET 8
+- **Framework**: .NET 10
 - **Database**: PostgreSQL (via EF Core)
 
 ## Getting Started
